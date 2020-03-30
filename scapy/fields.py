@@ -744,6 +744,22 @@ class LEX3BytesField(LEThreeBytesField, XByteField):
         return XByteField.i2repr(self, pkt, x)
 
 
+class NBytesField(Field):
+    def __init__(self, name, default, sz):
+        Field.__init__(self, name, default, "<" + "B" * sz)
+
+    def getfield(self, pkt, s):
+        return s[self.sz:], self.m2i(pkt, struct.unpack(self.fmt, s[:self.sz]))
+
+
+class XNBytesField(NBytesField):
+    def i2repr(self, pkt, x):
+        if isinstance(x, int):
+            return hex(x)
+        elif isinstance(x, tuple) or isinstance(x, list):
+            return "0x" + "".join(["%02x" % b for b in x])
+
+
 class SignedByteField(Field):
     def __init__(self, name, default):
         Field.__init__(self, name, default, "b")
