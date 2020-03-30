@@ -1025,6 +1025,14 @@ class StrField(Field):
         return RandBin(RandNum(0, 1200))
 
 
+class StrFieldUtf16(StrField):
+    def h2i(self, pkt, x):
+        return plain_str(x).encode('utf-16')[2:]
+
+    def i2h(self, pkt, x):
+        return x.decode('utf-16')
+
+
 class PacketField(StrField):
     __slots__ = ["cls"]
     holds_packets = 1
