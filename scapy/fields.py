@@ -1029,8 +1029,16 @@ class StrFieldUtf16(StrField):
     def h2i(self, pkt, x):
         return plain_str(x).encode('utf-16')[2:]
 
+    def any2i(self, pkt, x):
+        if isinstance(x, six.text_type):
+            return self.h2i(pkt, x)
+        return super(StrFieldUtf16, self).any2i(pkt, x)
+
+    def i2repr(self, pkt, x):
+        return x
+
     def i2h(self, pkt, x):
-        return x.decode('utf-16')
+        return bytes_encode(x).decode('utf-16')
 
 
 class PacketField(StrField):
@@ -1393,8 +1401,16 @@ class StrLenFieldUtf16(StrLenField):
     def h2i(self, pkt, x):
         return plain_str(x).encode('utf-16')[2:]
 
+    def any2i(self, pkt, x):
+        if isinstance(x, six.text_type):
+            return self.h2i(pkt, x)
+        return super(StrLenFieldUtf16, self).any2i(pkt, x)
+
+    def i2repr(self, pkt, x):
+        return x
+
     def i2h(self, pkt, x):
-        return x.decode('utf-16')
+        return bytes_encode(x).decode('utf-16')
 
 
 class BoundStrLenField(StrLenField):

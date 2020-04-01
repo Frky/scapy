@@ -105,6 +105,51 @@ assert(raw(p) == b'\x12\x34\x56\x01\xe2\x40\xca\xdb\xfe\x52\xaa\x08')
 print(p.sprintf('%test1% %test2% %test3% %test4%'))
 assert(p.sprintf('%test1% %test2% %test3% %test4%') == '0x123456 123456 0xfedbca 567890')
 
+
+= StrField
+~ field strfield
+~ field strlenfield
+
+class TestStrField(Packet):
+    fields_desc = [
+        LEFieldLenField('slen', None, length_of="s1"),
+        StrLenField('s1', None, length_from=lambda pkt: pkt.slen),
+        StrField('s2', None),
+    ]
+
+p = TestStrField(s1="cafe", s2="deadbeef")
+assert(raw(p) == b'\x04\x00cafedeadbeef')
+print(p.sprintf("%s1% %s2%"))
+assert(p.sprintf("%s1% %s2%") == "'cafe' 'deadbeef'")
+
+
+= StrFieldUtf16
+~ field strfieldutf16
+~ field strlenfieldutf16
+
+class TestStrLenFieldUtf16(Packet):
+    fields_desc = [
+        LEFieldLenField('slen', None, length_of="s1"),
+        StrLenFieldUtf16('s1', None, length_from=lambda pkt: pkt.slen),
+    ]
+
+p = TestStrLenFieldUtf16(s1='cafe')
+assert(raw(p) == b'\x08\x00c\x00a\x00f\x00e\x00')
+assert(p.sprintf("%s1%") == 'cafe')
+
+= StrFieldUtf16
+~ field strfieldutf16
+~ field strlenfieldutf16
+
+class TestStrFieldUtf16(Packet):
+    fields_desc = [
+        StrFieldUtf16('s1', None),
+    ]
+
+p = TestStrFieldUtf16(s1='cafe')
+assert(raw(p) == b'c\x00a\x00f\x00e\x00')
+assert(p.sprintf("%s1%") == 'cafe')
+
 ############
 ############
 + Tests on ActionField
