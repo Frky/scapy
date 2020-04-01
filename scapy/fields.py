@@ -744,12 +744,22 @@ class LEX3BytesField(LEThreeBytesField, XByteField):
         return XByteField.i2repr(self, pkt, x)
 
 
-class NBytesField(Field):
+class NBytesField(ByteField):
     def __init__(self, name, default, sz):
         Field.__init__(self, name, default, "<" + "B" * sz)
 
+    def i2m(self, pkt, x):
+        x2m = list()
+        for i in range(self.sz):
+            x2m.append(x % 256)
+            x //= 256
+        return x2m[::-1]
+
+    def addfield(self, pkt, s, val):
+        return s + self.struct.pack(*self.i2m(pkt, val))
+
     def getfield(self, pkt, s):
-        return s[self.sz:], self.m2i(pkt, struct.unpack(self.fmt, s[:self.sz]))
+        return s[self.sz:], self.m2i(pkt, self.struct.unpack(s[:self.sz]))
 
 
 class XNBytesField(NBytesField):

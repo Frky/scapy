@@ -106,6 +106,24 @@ print(p.sprintf('%test1% %test2% %test3% %test4%'))
 assert(p.sprintf('%test1% %test2% %test3% %test4%') == '0x123456 123456 0xfedbca 567890')
 
 
+= NBytesField
+~ field nbytesfield
+
+class TestNBytesField(Packet):
+    fields_desc = [
+        NBytesField('test1', None, 7),
+        XNBytesField('test2', None, 5),
+    ]
+
+p = TestNBytesField(test1=0x00112233445566, test2=824650445619)
+print(raw(p))
+assert(raw(p) == b'\x00\x11\x22\x33\x44\x55\x66\xc0\x00\xff\x33\x33')
+print(p.sprintf('%test1% %test2%'))
+assert(p.sprintf('%test1% %test2%') == '18838586676582 0xc000ff3333')
+assert(p.test1 == 0x112233445566)
+assert(p.test2 == 0xc000ff3333)
+
+
 = StrField
 ~ field strfield
 ~ field strlenfield
